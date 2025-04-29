@@ -1,6 +1,6 @@
 import userCatalogInfo from './userCatalogInfo.js';
 
-const syntaxErrorMessage = 'Invalid input';
+const wrongArguments = 'Invalid input';
 
 const parseArgs = () => {
 
