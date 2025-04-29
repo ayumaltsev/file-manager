@@ -1,3 +1,7 @@
+import userCatalogInfo from './userCatalogInfo.js';
+
+const syntaxErrorMessage = 'Invalid input';
+
 const parseArgs = () => {
 
     const args = process.argv.slice(2);
@@ -28,4 +32,9 @@ const parseArgs = () => {
     return userName;
 };
 
-const userName = parseArgs();
+parseArgs();
+userCatalogInfo.printCurrentDir();
+
+
+
+
