@@ -71,14 +71,18 @@ const cat = async (pathToFile) => {
     }
 };
 
-let flag2 = await isCorrectPath('C:\\Users\\ayuma\\KINO\\rom\\whsfbfb.txt');
-console.log(flag2);
+//Create empty file in current working directory
+//If file with a geven file name already exists - operationErrorMessage
+const add = async (pathToFile) => {
 
-try {
-    await cat('./KINO/rom');
-} catch (error) {
-    console.error(error.message);
+    const normalizedPath = path.normalize(pathToFile);
+    const fileName = path.basename(path.normalize(normalizedPath));
+    const directory = path.dirname(path.normalize(normalizedPath));
+
+    if (!await isCorrectPath(directory) || await isDestinationExists(normalizedPath)) {
+        throw new Error(operationErrorMessage);
+    }
+
+    await fsPromises.writeFile(path.join(directory, fileName), '');
 }
-
-
 
