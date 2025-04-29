@@ -71,8 +71,6 @@ const cat = async (pathToFile) => {
     }
 };
 
-//Create empty file in current working directory
-//If file with a geven file name already exists - operationErrorMessage
 const add = async (pathToFile) => {
 
     const normalizedPath = path.normalize(pathToFile);
@@ -86,3 +84,15 @@ const add = async (pathToFile) => {
     await fsPromises.writeFile(path.join(directory, fileName), '');
 }
 
+
+const mkdir = async (folderPath) => {
+
+    const normalizedPath = path.normalize(folderPath);
+    const parentFolder = path.dirname(path.normalize(normalizedPath));
+
+    if (!await isCorrectPath(parentFolder) || await isDestinationExists(normalizedPath)) {
+        throw new Error(operationErrorMessage);
+    }
+
+    await fsPromises.mkdir(folderPath, {recursive: false});
+}
