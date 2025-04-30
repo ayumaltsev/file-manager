@@ -17,9 +17,6 @@ function getCurrentDir() {
 function setCurrentDir(newDir) {
     process.chdir(newDir);
     currentDir = process.cwd();
-    if (currentDir !== newDir) {
-        throw new Error('Operation failed');
-    }
 }
 
 function printCurrentDir() {
