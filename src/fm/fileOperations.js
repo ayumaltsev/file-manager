@@ -2,7 +2,6 @@ import fsPromises from 'fs/promises';
 import path from 'path';
 import fs from 'fs';
 
-//after this module's importing we'll have home user directory as current working directory
 import userCatalogInfo from './userCatalogInfo.js';
 
 const operationErrorMessage = 'Operation failed';
@@ -37,10 +36,61 @@ const isCorrectPath = async (destination) => {
     }
 }
 
+const up = async () => {
+    try {
+        const home = path.normalize(userCatalogInfo.homeDir);
+        const current = path.normalize(userCatalogInfo.getCurrentDir());
+        if (await isCorrectPath(current)) {
+            if (current === home) return;
+            userCatalogInfo.setCurrentDir(path.dirname(current));
+        }
+    } catch (error) {
+        throw new Error(operationErrorMessage);
+    }
+}
+
+const cd = async (newDirectory) => {
+    try {
+        newDirectory = path.normalize(newDirectory);
+        if (await isCorrectPath(newDirectory)) {
+            userCatalogInfo.setCurrentDir(newDirectory);
+        }
+    } catch (error) {
+        throw new Error(operationErrorMessage);
+    }
+}
+
 const isFile = async (destination) => {
     try {
         const stats = await fsPromises.stat(destination);
         return stats.isFile();
+    } catch (error) {
+        throw new Error(operationErrorMessage);
+    }
+};
+
+const list = async () => {
+
+    const currentDir = userCatalogInfo.getCurrentDir();
+    const directories = [];
+    const files = [];
+
+    try {
+        const elements = await fsPromises.readdir(currentDir);
+
+        for (let element of elements) {
+            if (await isFile(element)) {
+                files.push(element);
+            } else {
+                directories.push(element);
+            }
+        };
+
+        directories.sort();
+        files.sort();
+
+        return {directories, files};
+
     } catch (error) {
         throw new Error(operationErrorMessage);
     }
@@ -83,7 +133,6 @@ const add = async (pathToFile) => {
 
     await fsPromises.writeFile(path.join(directory, fileName), '');
 }
-
 
 const mkdir = async (folderPath) => {
 
