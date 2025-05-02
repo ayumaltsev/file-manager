@@ -5,7 +5,7 @@ import fs from 'fs';
 import userCatalogInfo from './userCatalogInfo.js';
 
 const operationErrorMessage = 'Operation failed';
-const wrongArguments = 'Invalid input';
+const wrongArgumentsMessage = 'Invalid input';
 
 const isDestinationExists = async (destination) => {
     try {
@@ -101,7 +101,7 @@ const cat = async (pathToFile) => {
         try {
 
             if (!await isFile(path.normalize(pathToFile))) {
-                throw new Error(wrongArguments);
+                throw new Error(wrongArgumentsMessage);
             }
 
             const readableStream = fs.createReadStream(pathToFile);
@@ -111,7 +111,7 @@ const cat = async (pathToFile) => {
             readableStream.on('end', () => {
             });
         } catch (error) {
-            if (error.message === wrongArguments) {
+            if (error.message === wrongArgumentsMessage) {
                 throw error;
             }
             throw new Error(operationErrorMessage);
@@ -145,3 +145,67 @@ const mkdir = async (folderPath) => {
 
     await fsPromises.mkdir(folderPath, {recursive: false});
 }
+
+const rm = async (filePath) => {
+    if (await isCorrectPath(filePath) && await isFile(filePath)) {
+        try {
+            await fsPromises.unlink(path.normalize(filePath));
+        } catch (error) {
+            new Error(operationErrorMessage);
+        }
+    } else {
+        throw new Error(operationErrorMessage);
+    }
+}
+
+//The new file name MUST be just the desired new file NAME without the path.
+//The renamed file will be in the same folder as the original file.
+const rn = async (pathToFile, newFileName) => {
+
+    try {
+        if (newFileName.includes(path.sep)) {
+            throw new Error(wrongArgumentsMessage);
+        }
+
+        if (await isCorrectPath(pathToFile)) {
+            const dirName = path.dirname(path.resolve(pathToFile));
+            const destinationFile = path.join(dirName, newFileName);
+            console.log(destinationFile);
+            await fsPromises.rename(pathToFile, destinationFile);
+        } else {
+            throw new Error(operationErrorMessage);
+        }
+    } catch (error) {
+        throw new Error(operationErrorMessage);
+    }
+}
+
+const copy = async (pathToFile, pathToNewDirectory) => {
+
+    if (await isCorrectPath(pathToFile) && await isFile(pathToFile) && await isCorrectPath(pathToNewDirectory) && !await isFile(pathToNewDirectory)) {
+        try {
+            const absolutePathToFile = path.resolve(pathToFile);
+            const readStream = fs.createReadStream(absolutePathToFile);
+            const destinationFile = path.join(path.resolve(pathToNewDirectory), path.basename(absolutePathToFile));
+            const writeStream = fs.createWriteStream(destinationFile);
+            readStream.pipe(writeStream);
+            writeStream.on('finish', () => {
+                console.log('');
+            });
+        } catch (error) {
+            throw new Error(operationErrorMessage);
+        }
+    } else {
+        throw new Error(operationErrorMessage);
+    }
+}
+
+const mv = async (pathToFile, pathToNewDirectory) => {
+    try {
+        await copy(pathToFile, pathToNewDirectory);
+        await rm(pathToFile);
+    } catch (error) {
+        throw new Error(operationErrorMessage);
+    }
+}
+
