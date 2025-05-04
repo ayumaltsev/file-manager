@@ -84,7 +84,8 @@ const list = async () => {
             } else {
                 directories.push(element);
             }
-        };
+        }
+        ;
 
         directories.sort();
         files.sort();
@@ -158,26 +159,26 @@ const rm = async (filePath) => {
     }
 }
 
-//The new file name MUST be just the desired new file NAME without the path.
+//The new file name MUST be just the desired new file's NAME without the path.
 //The renamed file will be in the same folder as the original file.
 const rn = async (pathToFile, newFileName) => {
 
-    try {
-        if (newFileName.includes(path.sep)) {
-            throw new Error(wrongArgumentsMessage);
-        }
+    if (newFileName.includes('/') || newFileName.includes('\\')) {
+        throw new Error(wrongArgumentsMessage);
+    }
 
-        if (await isCorrectPath(pathToFile)) {
-            const dirName = path.dirname(path.resolve(pathToFile));
-            const destinationFile = path.join(dirName, newFileName);
-            console.log(destinationFile);
-            await fsPromises.rename(pathToFile, destinationFile);
-        } else {
-            throw new Error(operationErrorMessage);
-        }
+    if (!await isCorrectPath(pathToFile)) {
+        throw new Error(operationErrorMessage);
+    }
+
+    try {
+        const dirName = path.dirname(path.resolve(pathToFile));
+        const destinationFile = path.join(dirName, newFileName);
+        await fsPromises.rename(pathToFile, destinationFile)
     } catch (error) {
         throw new Error(operationErrorMessage);
     }
+
 }
 
 const copy = async (pathToFile, pathToNewDirectory) => {
@@ -208,4 +209,6 @@ const mv = async (pathToFile, pathToNewDirectory) => {
         throw new Error(operationErrorMessage);
     }
 }
+
+await rn("C:\\Users\\ayuma\\ppp\\mmm\\888.txt", 'dama.pdf');
 
