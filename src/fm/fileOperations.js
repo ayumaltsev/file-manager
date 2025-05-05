@@ -278,8 +278,28 @@ const compress = async (fileToCompressName, destination) => {
     }
 }
 
-export default {up, ls, cd, cat, add, mkdir, mv, rn, rm, copy, compress};
 
+const decompress = async (fileToDecompressName, destination) => {
+    if (await isCorrectPath(fileToDecompressName) && await isCorrectPath(destination)) {
+        try {
+            if (!await isFile(path.normalize(fileToDecompressName)) || await isFile(destination)) {
+                throw new Error(wrongArgumentsMessage);
+            }
+            const input = fs.createReadStream(fileToDecompressName);
+            const shortenedName = path.basename(fileToDecompressName).slice(0, -3);
+            const output = fs.createWriteStream(path.join(destination, shortenedName));
 
+            const brotli = createBrotliDecompress();
+            input.pipe(brotli).pipe(output);
 
+            output.on('finish', () => {
+            });
+        } catch (error) {
+            throw new Error(operationErrorMessage);
+        }
+    } else {
+        throw new Error(operationErrorMessage);
+    }
+}
 
+export default {up, ls, cd, cat, add, mkdir, mv, rn, rm, copy, compress, decompress};
