@@ -56,6 +56,12 @@ console.clear();
 userName = parseArgs();
 userCatalogInfo.printCurrentDir();
 console.log('Please, enter your command:');
+process.on('SIGINT', () => {
+    let mess = byMessage.replace('Username', userName)
+    console.log(mess);
+    process.exit(0);
+});
+
 await spawnChildProcess('START');
 
 

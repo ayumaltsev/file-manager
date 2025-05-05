@@ -12,7 +12,7 @@ const promptMessage = 'Please, enter your command:';
 const handleInput = async (chunk) => {
     const chunkStringified = chunk.toString();
 
-    if (chunkStringified.includes('CLOSE')) process.exit(0);
+    if (chunkStringified.includes('exit') || chunkStringified.includes('.exit')) process.exit(0);
 
     let commandWithArgs = chunkStringified.trim().split(space);
     const command = commandWithArgs[0].trim();
@@ -155,7 +155,6 @@ const handleInput = async (chunk) => {
 
             switch (argument) {
                 case "--EOL":
-                    //console.log(`System EOL: "${os.EOL}"`);
                     console.log(`EOL in your system (${process.platform}) have ASCII codes: ${os.EOL.split('').map(c => c.charCodeAt(0))}`);
                     break;
                 case "--cpus":
@@ -189,7 +188,6 @@ const handleInput = async (chunk) => {
         process.stdout.write(operationErrorMessage + '\n');
         process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
     }
-
 };
 
 process.stdin.on('data', handleInput);
