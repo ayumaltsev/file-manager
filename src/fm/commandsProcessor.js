@@ -1,0 +1,87 @@
+import userCatalogInfo from "./userCatalogInfo.js";
+import fileOperations from './fileOperations.js';
+
+const args = process.argv.slice(2);
+const space = ' ';
+const operationErrorMessage = 'Operation failed';
+const wrongArgumentsMessage = 'Invalid input';
+const currentDirMessage = 'You are currently in ';
+const promptMessage = 'Please, enter your command:';
+
+const handleInput = async (chunk) => {
+    const chunkStringified = chunk.toString();
+
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if (chunkStringified.includes('CLOSE')) process.exit(0);
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    let commandWithArgs = chunkStringified.trim().split(space);
+    const command = commandWithArgs[0].trim();
+    const commandArgs = commandWithArgs.slice(1);
+
+    try {
+        if (command === 'up') {
+            if (commandArgs.length > 0) {
+                process.stdout.write(wrongArgumentsMessage + '\n');
+                process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+                return;
+            }
+            await fileOperations.up();
+            process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+
+        } else if (command === 'cd') {
+            if (commandArgs.length !== 1) {
+                process.stdout.write(wrongArgumentsMessage + '\n');
+                process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+                return;
+            }
+            await fileOperations.cd(commandArgs[0].trim());
+            process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+
+        } else if (command === 'ls') {
+            if (commandArgs.length > 0) {
+                process.stdout.write(wrongArgumentsMessage + '\n');
+                process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+                return;
+            }
+
+            const result = await fileOperations.ls();
+
+            const forPrintingInTable = [];
+
+            for (let dir of result.directories) {
+                forPrintingInTable.push({Name: dir, Type: 'directory'});
+            }
+
+            for (let f of result.files) {
+                forPrintingInTable.push({Name: f, Type: 'file'});
+            }
+
+            console.table(forPrintingInTable);
+
+            process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+
+        } else if (command === 'cat') {
+            if (commandArgs.length !== 1) {
+                process.stdout.write(wrongArgumentsMessage + '\n');
+                process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+                return;
+            }
+
+            await fileOperations.cat(commandArgs[0].trim()).then(result => console.log(result));
+
+            process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+
+        } else {
+            process.stdout.write(wrongArgumentsMessage + '\n');
+            process.stdout.write(+'\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+        }
+
+    } catch (error) {
+        process.stdout.write(operationErrorMessage + '\n');
+        process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+    }
+
+};
+
+process.stdin.on('data', handleInput);
