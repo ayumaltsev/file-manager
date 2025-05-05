@@ -54,6 +54,8 @@ const cd = async (newDirectory) => {
         newDirectory = path.normalize(newDirectory);
         if (await isCorrectPath(newDirectory)) {
             userCatalogInfo.setCurrentDir(newDirectory);
+        } else {
+            throw new Error(operationErrorMessage);
         }
     } catch (error) {
         throw new Error(operationErrorMessage);
@@ -69,7 +71,7 @@ const isFile = async (destination) => {
     }
 };
 
-const list = async () => {
+const ls = async () => {
 
     const currentDir = userCatalogInfo.getCurrentDir();
     const directories = [];
@@ -85,7 +87,6 @@ const list = async () => {
                 directories.push(element);
             }
         }
-        ;
 
         directories.sort();
         files.sort();
@@ -98,6 +99,7 @@ const list = async () => {
 };
 
 const cat = async (pathToFile) => {
+
     if (await isCorrectPath(pathToFile)) {
         try {
 
@@ -105,12 +107,23 @@ const cat = async (pathToFile) => {
                 throw new Error(wrongArgumentsMessage);
             }
 
-            const readableStream = fs.createReadStream(pathToFile);
-            readableStream.on('data', (chunk) => {
-                process.stdout.write(chunk);
+            return new Promise((resolve, reject) => {
+                let bufferChunks = [];
+                const readableStream = fs.createReadStream(pathToFile);
+
+                readableStream.on('data', (chunk) => {
+                    bufferChunks.push(chunk);
+                });
+
+                readableStream.on('end', () => {
+                    resolve(Buffer.concat(bufferChunks).toString());
+                });
+
+                readableStream.on('error', (err) => {
+                    reject(new Error(operationErrorMessage));
+                });
             });
-            readableStream.on('end', () => {
-            });
+
         } catch (error) {
             if (error.message === wrongArgumentsMessage) {
                 throw error;
@@ -178,7 +191,6 @@ const rn = async (pathToFile, newFileName) => {
     } catch (error) {
         throw new Error(operationErrorMessage);
     }
-
 }
 
 const copy = async (pathToFile, pathToNewDirectory) => {
@@ -210,5 +222,4 @@ const mv = async (pathToFile, pathToNewDirectory) => {
     }
 }
 
-await rn("C:\\Users\\ayuma\\ppp\\mmm\\888.txt", 'dama.pdf');
-
+export default {up, ls, cd, cat, add, mkdir, mv, rn, rm};
