@@ -113,6 +113,37 @@ const handleInput = async (chunk) => {
 
             process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
 
+        } else if (command === 'rn') {
+            if (commandArgs.length !== 2) {
+                process.stdout.write(wrongArgumentsMessage + '\n');
+                process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+                return;
+            }
+
+            await fileOperations.rn(commandArgs[0].trim(), commandArgs[1].trim());
+
+            process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+
+        } else if (command === 'cp') {
+            if (commandArgs.length !== 2) {
+                process.stdout.write(wrongArgumentsMessage + '\n');
+                process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+                return;
+            }
+
+            await fileOperations.copy(commandArgs[0].trim(), commandArgs[1].trim());
+            process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+
+        } else if (command === 'mv') {
+            if (commandArgs.length !== 2) {
+                process.stdout.write(wrongArgumentsMessage + '\n');
+                process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+                return;
+            }
+
+            await fileOperations.mv(commandArgs[0].trim(), commandArgs[1].trim());
+            process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+
         } else if (command === 'os') {
             if (commandArgs.length !== 1 || !commandArgs[0].trim().startsWith('--')) {
                 process.stdout.write(wrongArgumentsMessage + '\n');

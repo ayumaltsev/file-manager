@@ -206,7 +206,6 @@ const copy = async (pathToFile, pathToNewDirectory) => {
             const writeStream = fs.createWriteStream(destinationFile);
             readStream.pipe(writeStream);
             writeStream.on('finish', () => {
-                console.log('');
             });
         } catch (error) {
             throw new Error(operationErrorMessage);
@@ -279,6 +278,8 @@ const compress = async (fileToCompressName, destination) => {
     }
 }
 
-export default {up, ls, cd, cat, add, mkdir, mv, rn, rm, compress};
+export default {up, ls, cd, cat, add, mkdir, mv, rn, rm, copy, compress};
+
+
 
 

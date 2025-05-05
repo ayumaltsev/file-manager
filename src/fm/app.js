@@ -2,13 +2,15 @@ import userCatalogInfo from './userCatalogInfo.js';
 import {spawn} from 'child_process';
 import path from 'path';
 
+const byMessage = 'Thank you for using File Manager, Username, goodbye!';
+let userName = 'noname';
+
 const parseArgs = () => {
 
     const args = process.argv.slice(2);
     const welcomeMessage = 'Welcome to the File Manager, Username!';
     const errorMessage = 'Please, start the application with only one argument called username!\n'
         + 'Example: npm run start -- --username=your_username';
-    let userName = 'noname';
 
     try {
         if (args.length > 1 || args.length === 0) {
@@ -44,13 +46,14 @@ const spawnChildProcess = async (args) => {
     });
 
     child.on('close', (code) => {
-        console.log(`Error ${code}`);
+        let mess = byMessage.replace('Username', userName)
+        console.log(mess);
     });
 
 };
 
 console.clear();
-const userName = parseArgs();
+userName = parseArgs();
 userCatalogInfo.printCurrentDir();
 console.log('Please, enter your command:');
 await spawnChildProcess('START');
