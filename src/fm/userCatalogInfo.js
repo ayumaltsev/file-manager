@@ -1,4 +1,9 @@
 import os from 'os';
+import path from 'path';
+import {fileURLToPath} from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const currentDirMessage = 'You are currently in ';
 const homeDir = os.homedir();
@@ -25,5 +30,5 @@ function printCurrentDir() {
 
 setCurrentDir(homeDir);
 
-export default {homeDir, printHomeDir, getCurrentDir, setCurrentDir, printCurrentDir};
+export default {homeDir, printHomeDir, getCurrentDir, setCurrentDir, printCurrentDir, __dirname};
 
