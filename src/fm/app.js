@@ -1,6 +1,6 @@
 import userCatalogInfo from './userCatalogInfo.js';
-
-const wrongArguments = 'Invalid input';
+import {spawn} from 'child_process';
+import path from 'path';
 
 const parseArgs = () => {
 
@@ -32,9 +32,28 @@ const parseArgs = () => {
     return userName;
 };
 
-parseArgs();
-userCatalogInfo.printCurrentDir();
+const spawnChildProcess = async (args) => {
 
+    const pathToProcessor = path.join(userCatalogInfo.__dirname, 'commandsProcessor.js');
+    const child = spawn('node', [pathToProcessor, ...args], {stdio: ['pipe', 'pipe', 'inherit']});
+
+    process.stdin.pipe(child.stdin);
+
+    child.stdout.on('data', (data) => {
+        console.log(`${data}`);
+    });
+
+    child.on('close', (code) => {
+        console.log(`Error ${code}`);
+    });
+
+};
+
+console.clear();
+const userName = parseArgs();
+userCatalogInfo.printCurrentDir();
+console.log('Please, enter your command:');
+await spawnChildProcess('START');
 
 
 
