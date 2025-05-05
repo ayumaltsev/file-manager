@@ -1,7 +1,7 @@
 import fsPromises from 'fs/promises';
 import path from 'path';
 import fs from 'fs';
-
+import crypto from 'crypto';
 import userCatalogInfo from './userCatalogInfo.js';
 
 const operationErrorMessage = 'Operation failed';
@@ -222,4 +222,39 @@ const mv = async (pathToFile, pathToNewDirectory) => {
     }
 }
 
-export default {up, ls, cd, cat, add, mkdir, mv, rn, rm};
+
+const hash = async (fileName) => {
+
+    if (await isCorrectPath(fileName)) {
+        try {
+            if (!await isFile(path.normalize(fileName))) {
+                throw new Error(wrongArgumentsMessage);
+            }
+
+            const fileStream = fs.createReadStream(fileName);
+            const hash = crypto.createHash('sha256');
+
+            return new Promise((resolve, reject) => {
+
+                fileStream.on('data', (chunk) => {
+                    hash.update(chunk);
+                });
+
+                fileStream.on('end', () => {
+                    const hashValue = hash.digest('hex');
+                    resolve(hashValue);
+                });
+
+                fileStream.on('error', (error) => {
+                    reject(error);
+                });
+            });
+        } catch (error) {
+            throw new Error(operationErrorMessage);
+        }
+    } else {
+        throw new Error(operationErrorMessage);
+    }
+}
+
+export default {up, ls, cd, cat, add, mkdir, mv, rn, rm, hash};

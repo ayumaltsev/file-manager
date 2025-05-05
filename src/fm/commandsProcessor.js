@@ -72,6 +72,17 @@ const handleInput = async (chunk) => {
 
             process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
 
+        } else if (command === 'hash') {
+            if (commandArgs.length !== 1) {
+                process.stdout.write(wrongArgumentsMessage + '\n');
+                process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+                return;
+            }
+
+            await fileOperations.hash(commandArgs[0].trim()).then(result => console.log(result));
+
+            process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+
         } else {
             process.stdout.write(wrongArgumentsMessage + '\n');
             process.stdout.write(+'\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
