@@ -93,6 +93,26 @@ const handleInput = async (chunk) => {
 
             process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
 
+        } else if (command === 'add') {
+            if (commandArgs.length !== 1) {
+                process.stdout.write(wrongArgumentsMessage + '\n');
+                process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+                return;
+            }
+            await fileOperations.add(commandArgs[0].trim());
+
+            process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+
+        } else if (command === 'rm') {
+            if (commandArgs.length !== 1) {
+                process.stdout.write(wrongArgumentsMessage + '\n');
+                process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+                return;
+            }
+            await fileOperations.rm(commandArgs[0].trim());
+
+            process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+
         } else if (command === 'os') {
             if (commandArgs.length !== 1 || !commandArgs[0].trim().startsWith('--')) {
                 process.stdout.write(wrongArgumentsMessage + '\n');
