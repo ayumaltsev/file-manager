@@ -2,7 +2,10 @@ import fsPromises from 'fs/promises';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
+import {createBrotliCompress} from 'zlib';
+import {createBrotliDecompress} from 'zlib';
 import userCatalogInfo from './userCatalogInfo.js';
+
 
 const operationErrorMessage = 'Operation failed';
 const wrongArgumentsMessage = 'Invalid input';
@@ -222,7 +225,6 @@ const mv = async (pathToFile, pathToNewDirectory) => {
     }
 }
 
-
 const hash = async (fileName) => {
 
     if (await isCorrectPath(fileName)) {
@@ -257,4 +259,26 @@ const hash = async (fileName) => {
     }
 }
 
-export default {up, ls, cd, cat, add, mkdir, mv, rn, rm, hash};
+const compress = async (fileToCompressName, destination) => {
+    if (await isCorrectPath(fileToCompressName) && await isCorrectPath(destination)) {
+        try {
+            if (!await isFile(path.normalize(fileToCompressName)) || await isFile(destination)) {
+                throw new Error(wrongArgumentsMessage);
+            }
+            const input = fs.createReadStream(fileToCompressName);
+            const output = fs.createWriteStream(path.join(destination, path.basename(fileToCompressName)) + '.br');
+            const brotli = createBrotliCompress();
+            input.pipe(brotli).pipe(output);
+            output.on('finish', () => {
+            });
+        } catch (error) {
+            throw new Error(operationErrorMessage);
+        }
+    } else {
+        throw new Error(operationErrorMessage);
+    }
+}
+
+export default {up, ls, cd, cat, add, mkdir, mv, rn, rm, compress};
+
+
