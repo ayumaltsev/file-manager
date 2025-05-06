@@ -93,6 +93,17 @@ const handleInput = async (chunk) => {
 
             process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
 
+        } else if (command === 'decompress') {
+            if (commandArgs.length !== 2) {
+                process.stdout.write(wrongArgumentsMessage + '\n');
+                process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+                return;
+            }
+
+            await fileOperations.decompress(commandArgs[0].trim(), commandArgs[1].trim()).then(() => console.log("Successfully decompressed"));
+
+            process.stdout.write('\n' + currentDirMessage + userCatalogInfo.getCurrentDir() + '\n' + promptMessage);
+
         } else if (command === 'add') {
             if (commandArgs.length !== 1) {
                 process.stdout.write(wrongArgumentsMessage + '\n');

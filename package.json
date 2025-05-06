@@ -1,0 +1,18 @@
+{
+  "name": "filemanager-app",
+  "version": "1.0.0",
+  "description": "FileManager Node.js app",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "start": "node src/fm/app"
+  },
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": [],
+  "author": "Anton Maltsev",
+  "license": "MIT"
+}
